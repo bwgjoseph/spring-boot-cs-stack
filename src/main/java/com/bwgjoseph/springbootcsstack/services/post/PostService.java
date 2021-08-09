@@ -5,20 +5,56 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class PostService {
 
-    public List<Post> find() {
-        Post post1 = Post.builder()
-            .id(1)
-            .title("title")
-            .body("body")
-            .createdAt(LocalDateTime.now())
-            .createdBy("createdBy")
-            .updatedAt(LocalDateTime.now())
-            .updatedBy("updatedBy")
-            .build();
+    private final PostMapper postMapper;
 
-        return List.of(post1);
+    private Post updatePost(Post post) {
+        post.setCreatedAt(LocalDateTime.now());
+        post.setCreatedBy("joseph");
+        post.setUpdatedAt(LocalDateTime.now());
+        post.setUpdatedBy("Joseph");
+
+        return post;
+    }
+
+    public List<Post> find() {
+        return postMapper.find();
+    }
+
+    public Post get(Integer id) {
+        return postMapper.get(id);
+    }
+
+    public Post create(Post post) {
+        this.updatePost(post);
+
+        postMapper.create(post);
+
+        return post;
+    }
+
+    public Post update(Post post) {
+        this.updatePost(post);
+
+        postMapper.update(post);
+
+        return post;
+    }
+
+    public Post updateById(Integer id, Post post) {
+        this.updatePost(post);
+
+        postMapper.updateById(id, post);
+
+        return post;
+    }
+
+    public Boolean delete(Integer id) {
+        return postMapper.delete(id);
     }
 }
