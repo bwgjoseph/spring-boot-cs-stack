@@ -1,22 +1,22 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
-import java.time.LocalDateTime;
+import com.bwgjoseph.springbootcsstack.core.BaseEntity;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@Builder
+@Getter
+@Setter
+@ToString(callSuper=true)
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class Post extends BaseEntity {
     private Integer id;
     private String title;
     private String body;
-    private LocalDateTime createdAt;
-    private String createdBy;
-    private LocalDateTime updatedAt;
-    private String updatedBy;
 }

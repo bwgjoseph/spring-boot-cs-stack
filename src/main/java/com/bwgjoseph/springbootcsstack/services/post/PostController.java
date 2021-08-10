@@ -26,26 +26,26 @@ public class PostController {
 
     @GetMapping("/{id}")
     public Post get(@PathVariable Integer id) {
-        return postService.get(id);
+        return this.postService.get(id);
     }
 
     @PostMapping
     public Post create(@RequestBody Post post) {
-        return postService.create(post);
+        return this.postService.create(post);
     }
 
     @PutMapping
     public Post update(@RequestBody Post post) {
-        return postService.update(post);
+        return this.postService.update(post);
     }
 
     @PutMapping("/{id}")
     public Post updateById(@PathVariable Integer id, @RequestBody Post post) {
-        return postService.updateById(id, post);
+        return this.postService.updateById(id, post);
     }
 
     @DeleteMapping("/{id}")
-    public Boolean delete(@PathVariable Integer id) {
-        return postService.delete(id);
+    public Post delete(@PathVariable Integer id) {
+        return this.postService.delete(id);
     }
 }

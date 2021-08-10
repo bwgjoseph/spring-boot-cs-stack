@@ -23,17 +23,17 @@ public class PostService {
     }
 
     public List<Post> find() {
-        return postMapper.find();
+        return this.postMapper.find();
     }
 
     public Post get(Integer id) {
-        return postMapper.get(id);
+        return this.postMapper.get(id);
     }
 
     public Post create(Post post) {
         this.updatePost(post);
 
-        postMapper.create(post);
+        this.postMapper.create(post);
 
         return post;
     }
@@ -41,7 +41,7 @@ public class PostService {
     public Post update(Post post) {
         this.updatePost(post);
 
-        postMapper.update(post);
+        this.postMapper.update(post);
 
         return post;
     }
@@ -49,12 +49,19 @@ public class PostService {
     public Post updateById(Integer id, Post post) {
         this.updatePost(post);
 
-        postMapper.updateById(id, post);
+        this.postMapper.updateById(id, post);
+
+        post.setId(id);
 
         return post;
     }
 
-    public Boolean delete(Integer id) {
-        return postMapper.delete(id);
+    public Post delete(Integer id) {
+
+        Post p = this.postMapper.get(id);
+
+        this.postMapper.delete(id);
+
+        return p;
     }
 }

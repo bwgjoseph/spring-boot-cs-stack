@@ -29,7 +29,7 @@ Declare a datasource to connects to `Oracle` via `MyBatis`
 // application.properties
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 spring.datasource.url=jdbc:oracle:thin:@localhost:1521/ORCLPDB1
-spring.datasource.username=orcl_user
+spring.datasource.username=cs_dev
 spring.datasource.password=password1
 
 // build.gradle
