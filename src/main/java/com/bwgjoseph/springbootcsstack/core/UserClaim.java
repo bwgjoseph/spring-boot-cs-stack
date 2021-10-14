@@ -28,14 +28,14 @@ public class UserClaim implements UserDetails {
 
 	private final boolean enabled;
 
-    public UserClaim(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this(username, password, true, true, true, true, authorities);
+    public UserClaim(String username, Collection<? extends GrantedAuthority> authorities) {
+        this(username, null, true, true, true, true, authorities);
     }
 
     public UserClaim(String username, String password, boolean enabled, boolean accountNonExpired,
 			boolean credentialsNonExpired, boolean accountNonLocked,
 			Collection<? extends GrantedAuthority> authorities) {
-		Assert.isTrue(username != null && !"".equals(username) && password != null,
+		Assert.isTrue(username != null && !"".equals(username),
 				"Cannot pass null or empty values to constructor");
 		this.username = username;
 		this.password = password;

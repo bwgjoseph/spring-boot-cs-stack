@@ -63,3 +63,22 @@ implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
   - Declare all SQL query and mapping
 - Note that it is not required to declared `@Mapper` in the interface class but if we don't, then need to declare a `@MapperScan(basePackages = "com.bwgjoseph.springbootcsstack")` at the main class
   - If we use `@Mapper`, it will be auto picked up by Spring
+
+## Spring Security
+
+Adding `spring-boot-starter-security` to the classpath will automatically enables `spring-security` default configuration which by default will generate a default user named `user` and password generated and displayed on startup. For details, look at [spring-security-docs](https://docs.spring.io/spring-security/site/docs/current/reference/html5/#servlet-hello-auto-configuration)
+
+It is also possible to setup a `default user, password and roles` from `application.properties`
+
+```json
+spring.security.user.name=admin
+spring.security.user.password=password
+spring.security.user.roles=admin
+```
+
+In test, there's the option to use `@WithAnonymousUser, @WithMockUser, @WithUserDetails` to inject the (mock) user so that we can write test with different user with different authorties. If that is not sufficient, we can also write custom annotation through the use of `@WithSecurityContext` to inject a custom user
+
+- Creates `AuthenticatedPrincipalContext` as a facade to grab the `AuthenticatedPrincipal`
+- Creates `@TestConfiguration UserConfig` as a way to easier inject mock user into the test via `@WithUserDetails`
+
+See [spring-security-guide](https://www.marcobehler.com/guides/spring-security)

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.bwgjoseph.springbootcsstack.context.AuthenticatedPrincipalContext;
 import com.bwgjoseph.springbootcsstack.core.UserClaim;
 
 import org.springframework.boot.test.context.TestConfiguration;
@@ -30,9 +31,14 @@ public class UserConfig {
 
     @Bean
     public CustomInMemoryUserDetailsManager customInMemoryUserDetailsManager() {
-        UserClaim user = new UserClaim("user", "password", List.of(new SimpleGrantedAuthority("USER")));
-        UserClaim admin = new UserClaim("admin", "password", List.of(new SimpleGrantedAuthority("ADMIN")));
+        UserClaim user = new UserClaim("user", List.of(new SimpleGrantedAuthority("USER")));
+        UserClaim admin = new UserClaim("admin", List.of(new SimpleGrantedAuthority("ADMIN")));
         return new CustomInMemoryUserDetailsManager(List.of(user, admin));
+    }
+
+    @Bean
+    public AuthenticatedPrincipalContext authenticatedPrincipalContext() {
+        return new AuthenticatedPrincipalContext();
     }
 }
 
@@ -67,12 +73,12 @@ class CustomInMemoryUserDetailsManager implements UserDetailsManager {
 	}
 
 	private UserClaim createUserDetails(String name, UserAttribute attr) {
-		return new UserClaim(name, attr.getPassword(), List.of());
+		return new UserClaim(name, attr.getAuthorities());
 	}
 
 	@Override
 	public void createUser(UserDetails user) {
-		this.users.put(user.getUsername().toLowerCase(), (UserClaim) new UserClaim(user.getUsername(), user.getPassword(), user.getAuthorities()));
+		this.users.put(user.getUsername().toLowerCase(), (UserClaim) new UserClaim(user.getUsername(), user.getAuthorities()));
 	}
 
 	@Override
@@ -82,7 +88,7 @@ class CustomInMemoryUserDetailsManager implements UserDetailsManager {
 
 	@Override
 	public void updateUser(UserDetails user) {
-		this.users.put(user.getUsername().toLowerCase(), (UserClaim) new UserClaim(user.getUsername(), user.getPassword(), user.getAuthorities()));
+		this.users.put(user.getUsername().toLowerCase(), (UserClaim) new UserClaim(user.getUsername(), user.getAuthorities()));
 	}
 
 	@Override
