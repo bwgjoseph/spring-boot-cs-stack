@@ -2,6 +2,8 @@ package com.bwgjoseph.springbootcsstack.core;
 
 import java.time.LocalDateTime;
 
+import com.bwgjoseph.springbootcsstack.services.post.CreatedBy;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public abstract class BaseEntity {
     private LocalDateTime createdAt;
+    @CreatedBy
     private String createdBy;
     private LocalDateTime updatedAt;
     private String updatedBy;

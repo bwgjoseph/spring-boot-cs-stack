@@ -2,9 +2,6 @@ package com.bwgjoseph.springbootcsstack.services.post;
 
 import java.util.List;
 
-import com.bwgjoseph.springbootcsstack.context.AuthenticatedPrincipalContext;
-import com.bwgjoseph.springbootcsstack.core.UserClaim;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +18,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-    private final AuthenticatedPrincipalContext authenticatedPrincipalContext;
 
     @GetMapping
     public List<Post> find() {
-        UserClaim uc = this.authenticatedPrincipalContext.getCurrentUser();
-        System.out.println(uc.toString());
         return this.postService.find();
     }
 
