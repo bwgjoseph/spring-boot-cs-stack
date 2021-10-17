@@ -1,6 +1,8 @@
 package com.bwgjoseph.springbootcsstack.config;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -45,11 +47,21 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             Authentication auth = new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            this.applicationEventPublisher.publishEvent(new AuditApplicationEvent(
-                new AuditEvent(user.getUsername(), "USER_REQUEST_AUDIT_EVENT")
-            ));
+            this.publishEvent(request, user.getUsername());
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    public void publishEvent(HttpServletRequest request, String username) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("requestUrl", request.getRequestURI());
+        data.put("sessionId", request.getSession().getId());
+        data.put("remoteAddr", request.getRemoteAddr());
+        data.put("localAddr", request.getLocalAddr());
+
+        this.applicationEventPublisher.publishEvent(new AuditApplicationEvent(
+            new AuditEvent(username, "USER_REQUEST_AUDIT_EVENT", data)
+        ));
     }
 }
