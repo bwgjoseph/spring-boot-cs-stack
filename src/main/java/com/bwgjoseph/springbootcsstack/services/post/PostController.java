@@ -2,6 +2,8 @@ package com.bwgjoseph.springbootcsstack.services.post;
 
 import java.util.List;
 
+import com.bwgjoseph.springbootcsstack.aop.LogExecutionTime;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
     private final PostService postService;
 
+    @LogExecutionTime
     @GetMapping
     public List<Post> find() {
         return this.postService.find();

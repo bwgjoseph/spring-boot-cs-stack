@@ -162,3 +162,7 @@ It is also possible to filter the events like such
 ```bash
 curl 'http://localhost:8080/actuator/auditevents?principal=alice&after=2021-09-23T07%3A15%3A31.562Z&type=logout' -i -X GET
 ```
+
+## Spring AOP
+
+Added a custom annotation `@LogExecutionTime` where when annotated on a method, will trigger an aspect (`LogExecutionTimeAspect`) to log out the execution time of the annotated method
