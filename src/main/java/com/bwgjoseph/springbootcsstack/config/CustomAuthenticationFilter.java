@@ -7,7 +7,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +28,9 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     private final UserClaimDetailsService userClaimDetailsService;
     private final SecurityProperties securityProperties;
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
     public CustomAuthenticationFilter(UserClaimDetailsService userClaimDetailsService, SecurityProperties securityProperties) {
         this.userClaimDetailsService = userClaimDetailsService;
         this.securityProperties = securityProperties;
@@ -37,6 +44,10 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             UserDetails user = this.userClaimDetailsService.loadUserByUsername(this.securityProperties.getUser().getName());
             Authentication auth = new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            this.applicationEventPublisher.publishEvent(new AuditApplicationEvent(
+                new AuditEvent(user.getUsername(), "USER_REQUEST_AUDIT_EVENT")
+            ));
         }
 
         filterChain.doFilter(request, response);

@@ -99,3 +99,66 @@ Important note:
 - And that way, the only choice is to use either `@WithUserDetails` or `@WithSecurityContext`
 
 See [spring-security-guide](https://www.marcobehler.com/guides/spring-security)
+
+## Spring Boot Actuator
+
+To work on `Audit Events`, we have to bring in `spring-boot-actuator` dependency first as it provides out of the box `auditevents` endpoint
+
+Add the following to `build.gradle`
+
+```groovy
+implementation 'org.springframework.boot:spring-boot-starter-actuator'
+```
+
+Run the application after adding the dependency, navigate to http://localhost:8080/actuator/health and you should see `{"status":"UP"}` and by default, only `health` endpoint is exposed
+
+If we wish to expose all endpoint, simply add the following to `application.properties`
+
+```json
+management.endpoints.web.exposure.include=*
+```
+
+Note that for `/auditevents`, we have to configure `InMemoryAuditEventRepository` in order for it to work
+
+```java
+@Configuration
+public class ActuatorConfig {
+    @Bean
+    public InMemoryAuditEventRepository repository(){
+        return new InMemoryAuditEventRepository();
+    }
+}
+```
+
+Thereafter, we can publish custom event like such
+
+```java
+this.applicationEventPublisher.publishEvent(new AuditApplicationEvent(
+    new AuditEvent(user.getUsername(), "USER_REQUEST_AUDIT_EVENT")
+));
+```
+
+And the logs will look like this
+
+```json
+{
+  "events": [
+    {
+      "timestamp": "2021-10-17T06:35:30.752503600Z",
+      "principal": "admin",
+      "type": "USER_REQUEST_AUDIT_EVENT"
+    },
+    {
+      "timestamp": "2021-10-17T06:35:51.209505800Z",
+      "principal": "admin",
+      "type": "USER_REQUEST_AUDIT_EVENT"
+    }
+  ]
+}
+```
+
+It is also possible to filter the events like such
+
+```bash
+curl 'http://localhost:8080/actuator/auditevents?principal=alice&after=2021-09-23T07%3A15%3A31.562Z&type=logout' -i -X GET
+```
