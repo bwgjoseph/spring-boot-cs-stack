@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.config;
+package com.bwgjoseph.springbootcsstack.security;
 
 import java.io.IOException;
 import java.util.HashMap;

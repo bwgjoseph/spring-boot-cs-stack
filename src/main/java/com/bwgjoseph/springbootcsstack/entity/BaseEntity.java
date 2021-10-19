@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.core;
+package com.bwgjoseph.springbootcsstack.entity;
 
 import java.time.LocalDateTime;
 

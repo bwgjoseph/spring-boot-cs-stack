@@ -2,8 +2,8 @@ package com.bwgjoseph.springbootcsstack;
 
 import java.util.List;
 
-import com.bwgjoseph.springbootcsstack.config.UserClaimDetailsService;
-import com.bwgjoseph.springbootcsstack.core.UserClaim;
+import com.bwgjoseph.springbootcsstack.security.UserClaim;
+import com.bwgjoseph.springbootcsstack.security.UserClaimDetailsService;
 import com.bwgjoseph.springbootcsstack.services.post.PostController;
 import com.bwgjoseph.springbootcsstack.services.post.PostService;
 

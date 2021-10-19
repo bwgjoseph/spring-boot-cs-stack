@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.bwgjoseph.springbootcsstack.context.AuthenticatedPrincipalContext;
-import com.bwgjoseph.springbootcsstack.core.UserClaim;
+import com.bwgjoseph.springbootcsstack.security.AuthenticatedPrincipalContext;
+import com.bwgjoseph.springbootcsstack.security.UserClaim;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

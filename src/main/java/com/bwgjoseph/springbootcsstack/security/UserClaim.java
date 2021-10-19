@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.core;
+package com.bwgjoseph.springbootcsstack.security;
 
 import java.io.Serializable;
 import java.util.Collection;

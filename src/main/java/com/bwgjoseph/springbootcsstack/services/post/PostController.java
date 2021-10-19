@@ -2,7 +2,7 @@ package com.bwgjoseph.springbootcsstack.services.post;
 
 import java.util.List;
 
-import com.bwgjoseph.springbootcsstack.aop.LogExecutionTime;
+import com.bwgjoseph.springbootcsstack.aspect.LogExecutionTime;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

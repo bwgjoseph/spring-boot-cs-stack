@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.config;
+package com.bwgjoseph.springbootcsstack.actuator;
 
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.context.annotation.Bean;

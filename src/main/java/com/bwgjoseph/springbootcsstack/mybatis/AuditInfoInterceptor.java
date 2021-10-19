@@ -2,7 +2,7 @@ package com.bwgjoseph.springbootcsstack.mybatis;
 
 import java.lang.reflect.Field;
 
-import com.bwgjoseph.springbootcsstack.context.AuthenticatedPrincipalContext;
+import com.bwgjoseph.springbootcsstack.security.AuthenticatedPrincipalContext;
 import com.bwgjoseph.springbootcsstack.services.post.CreatedBy;
 
 import org.apache.ibatis.executor.Executor;

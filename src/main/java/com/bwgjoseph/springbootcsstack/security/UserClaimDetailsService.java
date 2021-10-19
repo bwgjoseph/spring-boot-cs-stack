@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.config;
+package com.bwgjoseph.springbootcsstack.security;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-
-import com.bwgjoseph.springbootcsstack.core.UserClaim;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.security.core.GrantedAuthority;

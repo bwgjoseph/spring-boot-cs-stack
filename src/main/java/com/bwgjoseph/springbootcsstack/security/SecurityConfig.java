@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.config;
+package com.bwgjoseph.springbootcsstack.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;

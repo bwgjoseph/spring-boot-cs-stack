@@ -1,6 +1,4 @@
-package com.bwgjoseph.springbootcsstack.context;
-
-import com.bwgjoseph.springbootcsstack.core.UserClaim;
+package com.bwgjoseph.springbootcsstack.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

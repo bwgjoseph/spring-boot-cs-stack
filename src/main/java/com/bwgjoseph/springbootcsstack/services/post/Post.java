@@ -1,6 +1,6 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
-import com.bwgjoseph.springbootcsstack.core.BaseEntity;
+import com.bwgjoseph.springbootcsstack.entity.BaseEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

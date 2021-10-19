@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootcsstack.aop;
+package com.bwgjoseph.springbootcsstack.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
