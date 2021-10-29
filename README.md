@@ -166,3 +166,33 @@ curl 'http://localhost:8080/actuator/auditevents?principal=alice&after=2021-09-2
 ## Spring AOP
 
 Added a custom annotation `@LogExecutionTime` where when annotated on a method, will trigger an aspect (`LogExecutionTimeAspect`) to log out the execution time of the annotated method
+
+## PoC on patch endpoint
+
+To explore if it is possible to perform a patch with partial data, and update database using dynamic SQL query
+
+TLDR; it's possible but need to test on more edge case. For example, default value set on the pojo may accidentally override the data unknowingly
+
+### Possible solution
+
+#### Using json-patch / json-merge-patch
+
+See [using-http-patch-in-spring](https://cassiomolin.com/2019/06/10/using-http-patch-in-spring/) for detailed explanation
+
+It seem a little more complicated than I need right, so while this seem to be a good way to tackle the problem, there is a slightly easier way
+
+Note that this solution also requires to get the original data upfront before applying the patch
+
+#### Using jackson + dynamic SQL (batis)
+
+The idea is straight-forward, and easy to implement but have not tested for edge case, and more complicated use-case yet. There is no requirement to pull the data upfront before patch. Have yet to test with updating of different data-type column (string, int, date, etc)
+
+- Create a `patch` endpoint
+  - See `PostController.patchById`
+- Converts the incoming request pojo into `Map<String, Object>` using `jackson objectMapper`
+- Set `objectMapper` to ignore all `null` values
+  - With that, this would not work if the value really needs to be set as `null`
+- Use `mybatis dynamic SQL` to construct the `update` statement
+  - See `PostUpdateMapper`
+  - Note that, this method does not seem to work. Not sure if it's batis bug. (see [mybatis-3#2369](https://github.com/mybatis/mybatis-3/issues/2369))
+  - The alternative working solution is to use `@UpdateProvider` that construct the query using [sql-builder](https://mybatis.org/mybatis-3/statement-builders.html)

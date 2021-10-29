@@ -1,11 +1,15 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
 import java.util.List;
+import java.util.Map;
 
 import com.bwgjoseph.springbootcsstack.aspect.LogExecutionTime;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,6 +39,14 @@ public class PostController {
     @PostMapping
     public Post create(@RequestBody Post post) {
         return this.postService.create(post);
+    }
+
+    @PatchMapping(path = "/{id}")
+    public Post patchById(@PathVariable Integer id, @RequestBody Post post) {
+        ObjectMapper om = new ObjectMapper();
+        om.setSerializationInclusion(Include.NON_NULL);
+        Map<String, Object> mp = om.convertValue(post, Map.class);
+        return this.postService.patchById(id, mp);
     }
 
     @PutMapping

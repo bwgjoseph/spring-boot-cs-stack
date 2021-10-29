@@ -2,6 +2,7 @@ package com.bwgjoseph.springbootcsstack.services.post;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 public class PostService {
 
     private final PostMapper postMapper;
+    private final PostUpdateMapper postUpdateMapper;
 
     private Post updatePost(Post post) {
         post.setCreatedAt(LocalDateTime.now());
@@ -34,6 +36,13 @@ public class PostService {
         this.updatePost(post);
 
         this.postMapper.create(post);
+
+        return post;
+    }
+
+    public Map<String, Object> patchById(Integer id, Map<String, Object> post) {
+        this.postUpdateMapper.update(id, post);
+        post.put("id", id);
 
         return post;
     }
