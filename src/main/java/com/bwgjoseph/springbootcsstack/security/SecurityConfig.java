@@ -8,23 +8,37 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private SecurityProperties securityProperties;
 
-    @Bean("userDetailsService")
-    public UserClaimDetailsService userClaimDetailsService(SecurityProperties securityProperties) {
-        return new UserClaimDetailsService(securityProperties);
+    @Bean
+    public ConfigAuthenticationFilter configAuthenticationFilter(SecurityProperties securityProperties) throws Exception {
+        ConfigAuthenticationFilter caf = new ConfigAuthenticationFilter(securityProperties);
+        caf.setAuthenticationManager(authenticationManager());
+
+        return caf;
     }
 
     @Bean
-    public CustomAuthenticationFilter customAuthenticationFilter(UserClaimDetailsService userClaimDetailsService, SecurityProperties securityProperties) {
-        return new CustomAuthenticationFilter(userClaimDetailsService, securityProperties);
+    public PreAuthenticatedAuthenticationProvider provider(SecurityProperties securityProperties) {
+        PreAuthenticatedAuthenticationProvider p = new PreAuthenticatedAuthenticationProvider();
+        UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken> wrapper = new UserDetailsByNameServiceWrapper<>(this.userClaimDetailsService(securityProperties));
+        p.setPreAuthenticatedUserDetailsService(wrapper);
+        return p;
+    }
+
+    @Bean("userDetailsService")
+    public UserDetailsService userClaimDetailsService(SecurityProperties securityProperties) {
+        return new UserClaimDetailsService(securityProperties);
     }
 
     @Override
@@ -36,12 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticated()
             .and()
             // add PreAuthenticatedAuthenticationToken
-            .addFilterBefore(this.customAuthenticationFilter(this.userClaimDetailsService(this.securityProperties), this.securityProperties), BasicAuthenticationFilter.class)
+            .addFilterBefore(this.configAuthenticationFilter(this.securityProperties), AbstractPreAuthenticatedProcessingFilter.class)
+            .authenticationProvider(this.provider(this.securityProperties))
             // disable auth caching
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            // .and()
-            // .httpBasic()
             // Will get 403 forbidden if not disabled
             .and()
             .csrf()
