@@ -194,5 +194,6 @@ The idea is straight-forward, and easy to implement but have not tested for edge
   - With that, this would not work if the value really needs to be set as `null`
 - Use `mybatis dynamic SQL` to construct the `update` statement
   - See `PostUpdateMapper`
-  - Note that, this method does not seem to work. Not sure if it's batis bug. (see [mybatis-3#2369](https://github.com/mybatis/mybatis-3/issues/2369))
+  - ~~Note that, this method does not seem to work. Not sure if it's batis bug. (see [mybatis-3#2369](https://github.com/mybatis/mybatis-3/issues/2369))~~
+  - To use dynamic SQL with dynamic column (or table), the correct syntax to use is `${}` instead of `#{}`
   - The alternative working solution is to use `@UpdateProvider` that construct the query using [sql-builder](https://mybatis.org/mybatis-3/statement-builders.html)
