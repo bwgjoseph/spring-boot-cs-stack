@@ -1,8 +1,9 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -40,9 +41,26 @@ public class PostService {
         return post;
     }
 
-    public Map<String, Object> patchById(Integer id, Map<String, Object> post) {
-        this.postUpdateMapper.update(id, post);
-        post.put("id", id);
+    /**
+     * Can either
+     *
+     * - Construct `UpdateStatementProvider` and pass into the `update` method
+     * - Construct `UpdateDSL` in the `Mapper` and call from the service class
+     */
+    public Post patchById(Integer id, Post post) {
+        // UpdateStatementProvider updateStatement = UpdateDSL.update(PostDynamicSqlSupport.post)
+        //     .set(PostDynamicSqlSupport.title).equalToWhenPresent(post::getTitle)
+        //     .set(PostDynamicSqlSupport.body).equalToWhenPresent(post::getBody)
+        //     .set(PostDynamicSqlSupport.createdAt).equalToWhenPresent(post::getCreatedAt)
+        //     .where(PostDynamicSqlSupport.id, isEqualTo(id))
+        //     .build()
+        //     .render(RenderingStrategies.MYBATIS3);
+
+        // this.postUpdateMapper.update(updateStatement);
+
+        this.postUpdateMapper.update(c -> PostUpdateMapper
+            .updateSelectiveColumns(post, c)
+            .where(PostDynamicSqlSupport.id, isEqualTo(id)));
 
         return post;
     }

@@ -187,6 +187,8 @@ Note that this solution also requires to get the original data upfront before ap
 
 The idea is straight-forward, and easy to implement but have not tested for edge case, and more complicated use-case yet. There is no requirement to pull the data upfront before patch. Have yet to test with updating of different data-type column (string, int, date, etc)
 
+> See [stackoverflow](https://stackoverflow.com/questions/69778451/mybatis-passing-in-the-datatype-on-dynamic-update-query) on issue with different datatype
+
 - Create a `patch` endpoint
   - See `PostController.patchById`
 - Converts the incoming request pojo into `Map<String, Object>` using `jackson objectMapper`
@@ -197,3 +199,31 @@ The idea is straight-forward, and easy to implement but have not tested for edge
   - ~~Note that, this method does not seem to work. Not sure if it's batis bug. (see [mybatis-3#2369](https://github.com/mybatis/mybatis-3/issues/2369))~~
   - To use dynamic SQL with dynamic column (or table), the correct syntax to use is `${}` instead of `#{}`
   - The alternative working solution is to use `@UpdateProvider` that construct the query using [sql-builder](https://mybatis.org/mybatis-3/statement-builders.html)
+
+#### Using MyBatis Dynamic SQL library
+
+This solution rely on [mybatis-dynamic-sql](https://mybatis.org/mybatis-dynamic-sql/docs/introduction.html) library and it work very well even on the different datatype which is a plus. The only down side is to create some boilerplate code.
+
+- Create a class that maps to the actual table with the datatype defined. See `PostDynamicSqlSupport`
+- Create the neccessary methods in Mapper class
+  - There are two way about this
+    - Use `UpdateStatementProvider`
+      - Construct `UpdateStatementProvider` query directly in the service class and call the `mapper.update` method (see `CommonUpdateMapper`)
+    - Use `UpdateDSL`
+      - Define `update` and `updateSelectiveColumns` method in Mapper class
+      - Service class to call `update` method
+
+Overall, it seem like the last solution is the most elegant and not having to worry about the data-type issue and is type-safe
+
+### Notes
+
+#### Batch Insert/Update
+
+Should always use a single insert/update statement and loop it via `Java` and use `BATCH` executor. See [here](https://groups.google.com/g/mybatis-user/c/8QxLH7XuYlU/m/mLT5WT_TokoJ)
+
+References:
+
+- [mybatis-batch-insert-update-for-oracl](https://stackoverflow.com/questions/23486547/mybatis-batch-insert-update-for-oracle/29264696#29264696)
+- [using-mybatis-3-4-6-for-oracle-batch-update-and-got-the-1-result](https://stackoverflow.com/questions/58909833/using-mybatis-3-4-6-for-oracle-batch-update-and-got-the-1-result/58914577#58914577)
+- [spring-mybatis-how-to-determine-if-using-batch-mode-correctly](https://stackoverflow.com/questions/69787861/spring-mybatis-how-to-determine-if-using-batch-mode-correctly)
+- [mybatis-batch-update-insert-delete](https://pretius.com/blog/mybatis-batch-update-insert-delete/)
