@@ -1,8 +1,11 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
+import java.util.List;
 import java.util.function.Supplier;
 
+import org.apache.ibatis.annotations.Flush;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.executor.BatchResult;
 import org.mybatis.dynamic.sql.update.UpdateDSL;
 import org.mybatis.dynamic.sql.update.UpdateDSLCompleter;
 import org.mybatis.dynamic.sql.update.UpdateModel;
@@ -28,6 +31,20 @@ public interface PostUpdateMapper extends CommonUpdateMapper {
     // @UpdateProvider(type=SQLUpdate.class, method = "update")
     // public boolean update(Integer id, Map<String, Object> post);
 
+    // @Update({
+    //     "<script>",
+    //     "UPDATE POST",
+    //     "<set>",
+    //     "<if test='#{p.value} != null>p.fieldname = #{p.value}",
+    //     "</set>",
+    //     "WHERE id = #{id}",
+    //     "</script>"
+    // })
+    // public boolean update(@Param("id") Integer id, @Param("p") Post post);
+
+    // @UpdateProvider(type=SQLUpdate.class, method = "update")
+    // public boolean update(Integer id, Post post);
+
     // @UpdateProvider(type=SqlProviderAdapter.class, method="update")
     // int update(UpdateStatementProvider updateStatement);
 
@@ -48,4 +65,7 @@ public interface PostUpdateMapper extends CommonUpdateMapper {
             return post.getTitle();
             };
     }
+
+    @Flush
+    List<BatchResult> flush();
 }

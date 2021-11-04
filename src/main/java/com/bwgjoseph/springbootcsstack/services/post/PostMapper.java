@@ -3,12 +3,14 @@ package com.bwgjoseph.springbootcsstack.services.post;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Flush;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.executor.BatchResult;
 
 @Mapper
 public interface PostMapper {
@@ -32,4 +34,7 @@ public interface PostMapper {
 
     @Delete("DELETE FROM POST WHERE id = #{id}")
     public boolean delete(Integer id);
+
+    @Flush
+    List<BatchResult> flush();
 }

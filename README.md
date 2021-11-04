@@ -215,7 +215,27 @@ This solution rely on [mybatis-dynamic-sql](https://mybatis.org/mybatis-dynamic-
 
 Overall, it seem like the last solution is the most elegant and not having to worry about the data-type issue and is type-safe
 
-### Notes
+### Running `MyBatis` with `batch` mode
+
+When inserting or updating multiple records, it is not efficient to do so by creating a huge insert/update statement (see [batch-insert.update](#batch-insertupdate)). So to do that, one have to use the `sqlSession` with `BATCH` mode (see [mybatis-faq](https://github.com/mybatis/mybatis-3/wiki/FAQ#how-do-i-code-a-batch-insert))
+
+- Create `MyBatisConfig` to initialize the default `SqlSession` and the batch `SqlSession`
+- Inject the `batch SqlSession` to get the mapper class and trigger the method manually
+  - It also also possible to assign the mapper class to use the `batch SqlSession` by default using `MapperScan`, see [here](https://github.com/jeffgbutler/mybatis-cockroach-demo/blob/e4255a659d/src/main/java/com/example/cockroachdemo/MyBatisConfiguration.java#L27-L28)
+  ```java
+  @MapperScan(basePackages = "com.example.cockroachdemo.batchmapper", annotationClass = Mapper.class,
+            sqlSessionTemplateRef = "batchSqlSessionTemplate")
+  ```
+- Create `BatchResults` to store the final rows affected
+
+Take note that when using `lombok` with `@AllArgsConstructor` and with `@Qualifier` annotation, `lombok` will ignore the `@Qualifier` annotation, hence, the injected `SqlSession` will be the `non-batch`. See [spring-mybatis-how-to-determine-if-using-batch-mode-correctly](https://stackoverflow.com/questions/69787861/spring-mybatis-how-to-determine-if-using-batch-mode-correctly)
+
+So the solution to that is to add `lombok.config` to the root directory, and add `lombok.copyableAnnotations += org.springframework.beans.factory.annotation.Qualifier`
+
+References:
+
+- [mybatis-cockroach-demo](https://github.com/jeffgbutler/mybatis-cockroach-demo)
+- [so-60993091](https://github.com/harawata/mybatis-issues/tree/master/so-60993091)
 
 #### Batch Insert/Update
 

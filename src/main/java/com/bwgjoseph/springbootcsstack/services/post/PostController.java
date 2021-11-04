@@ -43,6 +43,21 @@ public class PostController {
         return this.postService.patchById(id, post);
     }
 
+    @PatchMapping(path = "/batch/{id}")
+    public Post patchByIdInBatch(@PathVariable Integer id, @RequestBody Post post) {
+        return this.postService.patchByIdInBatch(id, post);
+    }
+
+    @PatchMapping(path = "/batch-partial/{id}")
+    public Post patchByIdInBatchSelective(@PathVariable Integer id, @RequestBody Post post) {
+        return this.postService.patchByIdInBatchSelective(id, post);
+    }
+
+    @PatchMapping(path = "/batch-partial-provider/{id}")
+    public Post patchByIdInBatchSelectiveProvider(@PathVariable Integer id, @RequestBody Post post) {
+        return this.postService.patchByIdInBatchSelectiveProvider(id, post);
+    }
+
     @PutMapping
     public Post update(@RequestBody Post post) {
         return this.postService.update(post);
