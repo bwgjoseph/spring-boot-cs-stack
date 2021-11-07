@@ -19,4 +19,6 @@ public class Post extends BaseEntity {
     private Integer id;
     private String title;
     private String body;
+    private int viewCount;
+    private boolean hidden;
 }

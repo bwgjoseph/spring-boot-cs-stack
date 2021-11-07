@@ -247,3 +247,41 @@ References:
 - [using-mybatis-3-4-6-for-oracle-batch-update-and-got-the-1-result](https://stackoverflow.com/questions/58909833/using-mybatis-3-4-6-for-oracle-batch-update-and-got-the-1-result/58914577#58914577)
 - [spring-mybatis-how-to-determine-if-using-batch-mode-correctly](https://stackoverflow.com/questions/69787861/spring-mybatis-how-to-determine-if-using-batch-mode-correctly)
 - [mybatis-batch-update-insert-delete](https://pretius.com/blog/mybatis-batch-update-insert-delete/)
+- [java-persistence-frameworks-comparison](https://github.com/bwajtr/java-persistence-frameworks-comparison)
+
+## Spring Test
+
+### TestRestTemplate
+
+Using `TestRestTemplate` to call `patchForObject` will encounter `I/O` exception as it does not support `patch` method by default. See this [stackoverflow-post](https://stackoverflow.com/questions/41557069/how-do-i-implement-a-patch-executed-via-resttemplate) explanation for further details
+
+There two 2 ways to resolve this issue
+
+Bring in the dependency `testImplementation 'org.apache.httpcomponents:httpclient:4.5.13'` first
+
+1. Manually define `requestFactory`
+
+During the test, either within the `BeforeAll, BeforeEach` or within each individual `test`, do
+
+```java
+this.testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+```
+
+2. Initialize `RestTemplate` with the appropriate `requestFactory`
+
+Override the `RestTemplate Bean` configuration
+
+```java
+@TestConfiguration
+static class Config {
+    @Bean
+    public RestTemplate httpComponentsClientRestTemplate() {
+        final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(3000);
+        requestFactory.setReadTimeout(3000);
+        return new RestTemplate(requestFactory);
+    }
+}
+```
+
+This way, there is no need to manually (and remember to) set anything, and is the better approach of the two

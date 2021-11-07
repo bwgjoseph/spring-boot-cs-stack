@@ -1,18 +1,8 @@
 package com.bwgjoseph.springbootcsstack.services.post;
 
-import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.ibatis.executor.BatchResult;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.dynamic.sql.render.RenderingStrategies;
-import org.mybatis.dynamic.sql.update.UpdateDSL;
-import org.mybatis.dynamic.sql.update.render.UpdateStatementProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostService {
 
     private final PostMapper postMapper;
-    private final PostUpdateMapper postUpdateMapper;
-    @Qualifier("batchSqlSession") private final SqlSession batchSqlSession;
+    private final PostBatchRepository postBatchRepository;
 
     private Post updatePost(Post post) {
         post.setCreatedAt(LocalDateTime.now());
@@ -53,8 +42,6 @@ public class PostService {
         return post;
     }
 
-
-
     public Post patchById(Integer id, Post post) {
         log.info("Trigger patchById");
         this.postMapper.updateById(id, post);
@@ -63,25 +50,9 @@ public class PostService {
     }
 
     @Transactional
-    public Post patchByIdInBatch(Integer id, Post post) {
+    public BatchResults patchByIdInBatch(List<Post> post) {
         log.info("Trigger patchByIdInBatch");
-        List<List<BatchResult>> results = new ArrayList<>();
-        int batchSize = 2;
-
-        PostMapper pm = this.batchSqlSession.getMapper(PostMapper.class);
-
-        for (int i = 1; i <= 4; i++) {
-            pm.updateById(id++, post);
-
-            if (i % batchSize == 0 || i == batchSize) {
-                log.info("flushing batch");
-                results.add(pm.flush());
-            }
-        }
-
-        log.info((new BatchResults(results.size(), calculateRowsAffectedByMultipleBatches(results)).toString()));
-
-        return new Post();
+        return this.postBatchRepository.patchByIdInBatch(post);
     }
 
     /**
@@ -93,23 +64,7 @@ public class PostService {
     @Transactional
     public Post patchByIdInBatchSelective(Integer id, Post post) {
         log.info("Trigger patchByIdInBatchSelective");
-        List<List<BatchResult>> results = new ArrayList<>();
-        int batchSize = 2;
-
-        PostUpdateMapper p = this.batchSqlSession.getMapper(PostUpdateMapper.class);
-
-        for (int i = 1; i <= 6; i++) {
-            p.update(c -> PostUpdateMapper
-                    .updateSelectiveColumns(post, c)
-                    .where(PostDynamicSqlSupport.id, isEqualTo(id)));
-
-            if (i % batchSize == 0 || i == batchSize) {
-                log.info("flushing batch");
-                results.add(p.flush());
-            }
-        }
-
-        log.info((new BatchResults(results.size(), calculateRowsAffectedByMultipleBatches(results)).toString()));
+        this.postBatchRepository.patchByIdInBatchSelective(id, List.of(post, post, post));
 
         return new Post();
     }
@@ -118,44 +73,9 @@ public class PostService {
     public Post patchByIdInBatchSelectiveProvider(Integer id, Post post) {
         log.info("Trigger patchByIdInBatchSelectiveProvider");
 
-        List<List<BatchResult>> results = new ArrayList<>();
-        int batchSize = 4;
-
-        PostUpdateMapper p = this.batchSqlSession.getMapper(PostUpdateMapper.class);
-
-        for (int i = 1; i <= 8; i++) {
-            UpdateStatementProvider updateStatement = UpdateDSL.update(PostDynamicSqlSupport.post)
-                .set(PostDynamicSqlSupport.title).equalToWhenPresent(post::getTitle)
-                .set(PostDynamicSqlSupport.body).equalToWhenPresent(post::getBody)
-                .set(PostDynamicSqlSupport.createdAt).equalToWhenPresent(post::getCreatedAt)
-                .where(PostDynamicSqlSupport.id, isEqualTo(id))
-                .build()
-                .render(RenderingStrategies.MYBATIS3);
-
-            p.update(updateStatement);
-
-            if (i % batchSize == 0 || i == batchSize) {
-                log.info("flushing batch");
-                results.add(p.flush());
-            }
-        }
-
-        log.info((new BatchResults(results.size(), calculateRowsAffectedByMultipleBatches(results)).toString()));
+        this.postBatchRepository.patchByIdInBatchSelectiveProvider(id, List.of(post, post, post));
 
         return post;
-    }
-
-    private int calculateRowsAffectedByMultipleBatches(List<List<BatchResult>> results) {
-        return results.stream()
-            .mapToInt(this::calculateRowsAffectedBySingleBatch)
-            .sum();
-    }
-
-    private int calculateRowsAffectedBySingleBatch(List<BatchResult> results) {
-        return results.stream()
-            .map(BatchResult::getUpdateCounts)
-            .flatMapToInt(Arrays::stream)
-            .sum();
     }
 
     public Post update(Post post) {

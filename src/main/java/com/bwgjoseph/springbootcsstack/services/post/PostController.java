@@ -43,9 +43,9 @@ public class PostController {
         return this.postService.patchById(id, post);
     }
 
-    @PatchMapping(path = "/batch/{id}")
-    public Post patchByIdInBatch(@PathVariable Integer id, @RequestBody Post post) {
-        return this.postService.patchByIdInBatch(id, post);
+    @PatchMapping(path = "/batch")
+    public BatchResults patchByIdInBatch(@RequestBody List<Post> post) {
+        return this.postService.patchByIdInBatch(post);
     }
 
     @PatchMapping(path = "/batch-partial/{id}")

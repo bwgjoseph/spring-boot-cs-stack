@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import org.apache.ibatis.annotations.Flush;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.executor.BatchResult;
 import org.mybatis.dynamic.sql.update.UpdateDSL;
 import org.mybatis.dynamic.sql.update.UpdateDSLCompleter;
@@ -68,4 +70,7 @@ public interface PostUpdateMapper extends CommonUpdateMapper {
 
     @Flush
     List<BatchResult> flush();
+
+    @Update("UPDATE POST SET title = #{p.title}, body = #{p.body}, viewCount = #{p.viewCount}, hidden = #{p.hidden}, createdAt = #{p.createdAt}, createdBy = #{p.createdBy}, updatedAt = #{p.updatedAt}, updatedBy = #{p.updatedBy} WHERE id = #{p.id}")
+    public boolean updateByIdBatch(@Param("p") Post post);
 }
