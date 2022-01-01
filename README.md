@@ -165,7 +165,36 @@ curl 'http://localhost:8080/actuator/auditevents?principal=alice&after=2021-09-2
 
 ## Spring AOP
 
+### @LogExecutionTime
+
 Added a custom annotation `@LogExecutionTime` where when annotated on a method, will trigger an aspect (`LogExecutionTimeAspect`) to log out the execution time of the annotated method
+
+### @Last
+
+Added a custom annotation `@Last` where when annotated on a field will set the audit info (`LastUpdate`) object
+
+This will be used on a `CustomRequestBodyAdvice` that intercepts the http request and set the audit info before reaching the controller. The purpose of this is to set the audit info right at controller layer instead at repository layer which is similar to the concept of [jpa.auditing](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.auditing) but does not rely on `spring-data-jpa`
+
+The current implementation uses `reflection + annotation` to achieve by searching the object for a specific annotation (`@Last`) and then uses reflection to set the `LastUpdate` object. This feature is not complete yet as it currently does not support when an incoming object has a child object which is null, and within the child object has `LastUpdate` object
+
+```java
+// this is working as expected
+Person person = Person.builder()
+                      .name("joseph")
+                      .age(20)
+                      // soi is defined, will set LastUpdate
+                      .soi(SourceOfInfo.builder().source("source").build())
+                      .build();
+
+// this is not because soi is null
+Person person = Person.builder()
+                      .name("joseph")
+                      .age(20)
+                      // soi is not defined, will not set LastUpdate
+                      .build();
+```
+
+See `AdviceServiceTest` for more details
 
 ## PoC on patch endpoint
 
